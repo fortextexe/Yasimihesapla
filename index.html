@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yaşımı hesapla</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #000;
+            --surface-color: #000;
+            --primary-color: #fff;
+            --secondary-color: #ddd;
+            --text-color: #fff;
+            --text-secondary: #bbb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: background-color 0.3s ease;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .input-group {
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        select {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: var(--surface-color);
+            color: var(--text-color);
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            appearance: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+        }
+
+        button {
+            width: 100%;
+            max-width: 400px;
+            padding: 1rem;
+            background-color: var(--primary-color);
+            color: var(--bg-color);
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        #result {
+            width: 100%;
+            max-width: 400px;
+            margin-top: 2rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        #result.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .result-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background-color: var(--surface-color);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .result-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .icon {
+            margin-right: 1rem;
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            width: 1.5rem;
+            text-align: center;
+        }
+
+        .result-text {
+            flex-grow: 1;
+        }
+
+        .result-value {
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 1rem;
+            background-color: var(--surface-color);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer a:hover {
+            color: var(--secondary-color);
+        }
+
+        @media (max-width: 600px) {
+            .main-content {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 1.75rem;
+            }
+
+            select, button {
+                font-size: 0.9rem;
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <h1><i class="fas fa-hourglass-half icon"></i>Yaşımı hesapla</h1>
+        <div class="input-group">
+            <label for="day"><i class="fas fa-calendar-day icon"></i> Gün:</label>
+            <select id="day"></select>
+        </div>
+        <div class="input-group">
+            <label for="month"><i class="fas fa-calendar-alt icon"></i> Ay:</label>
+            <select id="month"></select>
+        </div>
+        <div class="input-group">
+            <label for="year"><i class="fas fa-calendar icon"></i> Yıl:</label>
+            <select id="year"></select>
+        </div>
+        <button onclick="calculateAge()"><i class="fas fa-calculator icon"style="color: black;"></i> Yaşımı Hesapla</button>
+        <div id="result"></div>
+    </div>
+    <div class="footer">
+        <span id="currentYear"></span> | <a href="https://fortextdev.xyz" target="_blank">Førtext</a> tarafından yapıldı
+    </div>
+
+    <script>
+        const daySelect = document.getElementById('day');
+        const monthSelect = document.getElementById('month');
+        const yearSelect = document.getElementById('year');
+        const resultDiv = document.getElementById('result');
+        const currentYearSpan = document.getElementById('currentYear');
+        let intervalId;
+
+        function populateSelects() {
+            const currentYear = new Date().getFullYear();
+            const months = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+
+            for (let i = 1; i <= 31; i++) {
+                daySelect.innerHTML += `<option value="${i}">${i}</option>`;
+            }
+
+            months.forEach((month, index) => {
+                monthSelect.innerHTML += `<option value="${index + 1}">${month}</option>`;
+            });
+
+            for (let i = currentYear; i >= 1900; i--) {
+                yearSelect.innerHTML += `<option value="${i}">${i}</option>`;
+            }
+
+            currentYearSpan.textContent = currentYear;
+        }
+
+        function calculateTotalDays(birthDate) {
+            const now = new Date();
+            const diffTime = Math.abs(now - birthDate);
+            return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        }
+
+        function getZodiacSign(day, month) {
+            const signs = [
+                { name: "Kova", icon: "fas fa-tint", start: { month: 1, day: 20 }, end: { month: 2, day: 18 } },
+                { name: "Balık", icon: "fas fa-fish", start: { month: 2, day: 19 }, end: { month: 3, day: 20 } },
+                { name: "Koç", icon: "fas fa-ram", start: { month: 3, day: 21 }, end: { month: 4, day: 19 } },
+                { name: "Boğa", icon: "fas fa-bullseye", start: { month: 4, day: 20 }, end: { month: 5, day: 20 } },
+                { name: "İkizler", icon: "fas fa-user-friends", start: { month: 5, day: 21 }, end: { month: 6, day: 20 } },
+                { name: "Yengeç", icon: "fas fa-crab", start: { month: 6, day: 21 }, end: { month: 7, day: 22 } },
+                { name: "Aslan", icon: "fas fa-crown", start: { month: 7, day: 23 }, end: { month: 8, day: 22 } },
+                { name: "Başak", icon: "fas fa-spa", start: { month: 8, day: 23 }, end: { month: 9, day: 22 } },
+                { name: "Terazi", icon: "fas fa-balance-scale", start: { month: 9, day: 23 }, end: { month: 10, day: 22 } },
+                { name: "Akrep", icon: "fas fa-spider", start: { month: 10, day: 23 }, end: { month: 11, day: 21 } },
+                { name: "Yay", icon: "fas fa-arrow-alt-circle-up", start: { month: 11, day: 22 }, end: { month: 12, day: 21 } },
+                { name: "Oğlak", icon: "fas fa-mountain", start: { month: 12, day: 22 }, end: { month: 1, day: 19 } }
+            ];
+
+            for (let sign of signs) {
+                if (
+                    (month === sign.start.month && day >= sign.start.day) ||
+                    (month === sign.end.month && day <= sign.end.day) ||
+                    (sign.start.month > sign.end.month && (
+                        (month >= sign.start.month && day >= sign.start.day) ||
+                        (month <= sign.end.month && day <= sign.end.day)
+                    ))
+                ) {
+                    return sign;
+                }
+            }
+            return null;
+        }
+
+        function calculateAge() {
+            clearInterval(intervalId);
+            
+            const day = parseInt(daySelect.value);
+            const month = parseInt(monthSelect.value) - 1;
+            const year = parseInt(yearSelect.value);
+
+            const birthDate = new Date(year, month, day);
+            const zodiacSign = getZodiacSign(day, month + 1);
+            
+            function updateAge() {
+                const now = new Date();
+                const diffTime = Math.abs(now - birthDate);
+                const diffYears = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 365.25));
+                const diffMonths = Math.floor((diffTime % (1000 * 60 * 60 * 24 * 365.25)) / (1000 * 60 * 60 * 24 * 30.44));
+                const diffWeeks = Math.floor((diffTime % (1000 * 60 * 60 * 24 * 30.44)) / (1000 * 60 * 60 * 24 * 7));
+                const diffDays = Math.floor((diffTime % (1000 * 60 * 60 * 24 * 7)) / (1000 * 60 * 60 * 24));
+                const diffHours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const diffMinutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
+                const totalDays = calculateTotalDays(birthDate);
+
+                resultDiv.innerHTML = `
+                    <div class="result-item"><i class="fas fa-birthday-cake icon"></i><span class="result-text">Yıl: <span class="result-value">${diffYears}</span></span></div>
+                    <div class="result-item"><i class="fas fa-calendar-alt icon"></i><span class="result-text">Ay: <span class="result-value">${diffMonths}</span></span></div>
+                    <div class="result-item"><i class="fas fa-calendar-week icon"></i><span class="result-text">Hafta: <span class="result-value">${diffWeeks}</span></span></div>
+                    <div class="result-item"><i class="fas fa-calendar-day icon"></i><span class="result-text">Gün: <span class="result-value">${diffDays}</span></span></div>
+                    <div class="result-item"><i class="fas fa-clock icon"></i><span class="result-text">Saat: <span class="result-value">${diffHours}</span></span></div>
+                    <div class="result-item"><i class="fas fa-stopwatch icon"></i><span class="result-text">Dakika: <span class="result-value">${diffMinutes}</span></span></div>
+                    <div class="result-item"><i class="fas fa-calendar-check icon"></i><span class="result-text">Toplam yaşadığınız gün: <span class="result-value">${totalDays}</span></span></div>
+                    <div class="result-item"><i class="${zodiacSign.icon} icon"></i><span class="result-text">Burcunuz: <span class="result-value">${zodiacSign.name}</span></span></div>
+                    <div class="result-item">
+                        <i class="fas fa-star icon"></i>
+                        <span class="result-text">Sonuç: 
+                            <span class="result-value">
+                                ${diffYears} yaşındasın. İlerideki yaşın ${diffYears + 1}. Şimdiden doğum günün kutlu olsun :)
+                            </span>
+                        </span>
+                    </div>
+                `;
+
+                resultDiv.classList.add('show');
+            }
+
+            updateAge();
+            intervalId = setInterval(updateAge, 60000);
+        }
+
+        window.onload = () => {
+            populateSelects();
+            document.querySelector('button').classList.add('pulse');
+        };
+    </script>
+</body>
+  </html>
